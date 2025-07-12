@@ -1,112 +1,114 @@
-# Flutter
+# 💸 Smart Expenses Tracker – Flutter-Based App (AI + Offline + Group Features)
 
-A modern Flutter-based mobile application utilizing the latest mobile development technologies and tools for building responsive cross-platform applications.
+A cross-platform expense tracking app with offline-first support, group-based budget planning, and premium AI budget optimizer.
 
-## 📋 Prerequisites
+---
 
-- Flutter SDK (^3.29.2)
-- Dart SDK
-- Android Studio / VS Code with Flutter extensions
-- Android SDK / Xcode (for iOS development)
+## 📱 App Access Types
 
-## 🛠️ Installation
+### 👤 Guest User (No Login)
+- Can access all basic **expense tracking and budget planning** features
+- Data stored **locally** using Isar
+- Cannot sync across devices
+- Cannot use **Group** or **AI** features
 
-1. Install dependencies:
-```bash
-flutter pub get
-```
+### 🔐 Logged-in User (Firebase Auth)
+- Access data across devices via **Firestore sync**
+- Can **create or join up to 5 groups** (Basic Plan)
+- Access all free features + group dashboard
+- Upgrade to Premium to unlock AI & unlimited groups
 
-2. Run the application:
-```bash
-flutter run
-```
+---
 
-## 📁 Project Structure
+## 🆓 Free Features
 
-```
-flutter_app/
-├── android/            # Android-specific configuration
-├── ios/                # iOS-specific configuration
-├── lib/
-│   ├── core/           # Core utilities and services
-│   │   └── utils/      # Utility classes
-│   ├── presentation/   # UI screens and widgets
-│   │   └── splash_screen/ # Splash screen implementation
-│   ├── routes/         # Application routing
-│   ├── theme/          # Theme configuration
-│   ├── widgets/        # Reusable UI components
-│   └── main.dart       # Application entry point
-├── assets/             # Static assets (images, fonts, etc.)
-├── pubspec.yaml        # Project dependencies and configuration
-└── README.md           # Project documentation
-```
+### 1. **User Authentication**
+- Email/password login via Firebase Auth
+- Guest users can skip login, but data stays local
 
-## 🧩 Adding Routes
+### 2. **Expense Tracking**
+- Add/Edit/Delete expenses
+- Fields: Amount, Date, Category, Note
+- Category color and icon support
 
-To add new routes to the application, update the `lib/routes/app_routes.dart` file:
+### 3. **Monthly Budget Planning**
+- Set and manage monthly budgets
+- View progress with budget vs. expenses
+- Pie/Bar charts (via `fl_chart`)
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:package_name/presentation/home_screen/home_screen.dart';
+### 4. **Group Budget Sharing (Basic)**
+- Only available to **logged-in users**
+- Users can:
+  - Create a group (gets a `groupId`)
+  - Join a group using `groupId`
+  - View budgets of group members (read-only)
+- Limit: **5 groups per user (basic plan)**
+- Data synced via Firestore
 
-class AppRoutes {
-  static const String initial = '/';
-  static const String home = '/home';
+### 5. **Offline-first Support**
+- All users (guest or logged-in) store data locally in **Isar**
+- Logged-in users sync with **Firestore** when online
+- Use `updatedAt` and `isSynced` flags for smart sync
 
-  static Map<String, WidgetBuilder> routes = {
-    initial: (context) => const SplashScreen(),
-    home: (context) => const HomeScreen(),
-    // Add more routes as needed
-  }
-}
-```
+---
 
-## 🎨 Theming
+## 💎 Premium Features (In-App Purchase)
 
-This project includes a comprehensive theming system with both light and dark themes:
+### 1. **AI Budget Optimizer**
+- Suggest better budget splits based on past expenses
+- Estimate monthly savings potential
+- Powered via **OpenAI** or **Gemini** (API)
 
-```dart
-// Access the current theme
-ThemeData theme = Theme.of(context);
+### 2. **Unlimited Groups**
+- Remove 5-group limit for logged-in users
+- Allow creating/joining unlimited groups
 
-// Use theme colors
-Color primaryColor = theme.colorScheme.primary;
-```
+### 3. **PDF/Excel Report Export** (Optional Phase 2)
 
-The theme configuration includes:
-- Color schemes for light and dark modes
-- Typography styles
-- Button themes
-- Input decoration themes
-- Card and dialog themes
+### 4. **Premium Screen Access**
+- AI Planner screen
+- Premium Badge or Tag on unlocked features
 
-## 📱 Responsive Design
+---
 
-The app is built with responsive design using the Sizer package:
+## 🧱 Tech Stack
 
-```dart
-// Example of responsive sizing
-Container(
-  width: 50.w, // 50% of screen width
-  height: 20.h, // 20% of screen height
-  child: Text('Responsive Container'),
-)
-```
-## 📦 Deployment
+| Layer             | Tool/Tech                              |
+|------------------|----------------------------------------|
+| UI Framework      | Flutter                                |
+| Auth              | Firebase Auth                          |
+| Local Storage     | Isar (offline-first DB)                |
+| Cloud Sync        | Firebase Firestore                     |
+| State Management  | Riverpod (or Provider)                 |
+| AI Logic          | OpenAI or Gemini API                   |
+| In-App Purchases  | `in_app_purchase` Flutter SDK          |
+| Charts            | `fl_chart`                             |
+| Notifications     | `flutter_local_notifications` (optional) |
 
-Build the application for production:
+---
 
-```bash
-# For Android
-flutter build apk --release
+## 🖥 Screens
 
-# For iOS
-flutter build ios --release
-```
+- Splash / Onboarding
+- Guest/Welcome Screen
+- Login / Register
+- Home Dashboard
+- Add/Edit Expense
+- Budget Overview + Charts
+- Group Dashboard (Logged-in only)
+- AI Budget Planner (Premium only)
+- Premium Upgrade Screen
+- Profile / Settings
 
-## 🙏 Acknowledgments
-- Built with [Rocket.new](https://rocket.new)
-- Powered by [Flutter](https://flutter.dev) & [Dart](https://dart.dev)
-- Styled with Material Design
+---
 
-Built with ❤️ on Rocket.new
+## 🧠 Notes & Logic Rules
+
+- Guest users store data locally only (Isar DB)
+- Logged-in users get cloud sync and group access
+- Group feature is **view-only**, no live editing
+- Use `groupId` to fetch member budgets from Firestore
+- `isPremium` flag is used to unlock:
+  - AI Budget Planner
+  - Unlimited groups
+  - Export (future)
