@@ -1,7 +1,9 @@
+import 'package:expensetracker_pro/model/category_model.dart';
 import 'package:expensetracker_pro/presentation/add_expense/add_expense.dart';
 import 'package:expensetracker_pro/presentation/budget_planner/budget_planner.dart';
 import 'package:expensetracker_pro/presentation/groups_dashboard/groups_dashboard.dart';
 import 'package:expensetracker_pro/presentation/user_profile_settings/user_profile_settings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -61,15 +63,15 @@ class _HomeDashboardState extends State<HomeDashboard> {
     ],
   };
 
-  final List<Map<String, dynamic>> _categories = [
-    {"id": 1,'name': 'Food', 'icon': 'restaurant', 'color': Colors.orange},
-    {"id": 2,'name': 'Transport', 'icon': 'directions_car', 'color': Colors.blue},
-    {"id": 3,'name': 'Shopping', 'icon': 'shopping_bag', 'color': Colors.purple},
-    {"id": 4,'name': 'Entertainment', 'icon': 'movie', 'color': Colors.red},
-    {"id": 5,'name': 'Health', 'icon': 'local_hospital', 'color': Colors.green},
-    {"id": 6,'name': 'Bills', 'icon': 'receipt', 'color': Colors.grey},
-    {"id": 7,'name': 'Education', 'icon': 'school', 'color': Colors.indigo},
-    {"id": 8,'name': 'Travel', 'icon': 'flight', 'color': Colors.teal},
+  final List<CategoryModel> categories = [
+    CategoryModel(id: 1, name: 'Food', icon: 'restaurant', color: Colors.orange),
+    CategoryModel(id: 2, name: 'Transport', icon: 'directions_car', color: Colors.blue),
+    CategoryModel(id: 3, name: 'Shopping', icon: 'shopping_bag', color: Colors.purple),
+    CategoryModel(id: 4, name: 'Entertainment', icon: 'movie', color: Colors.red),
+    CategoryModel(id: 5, name: 'Health', icon: 'local_hospital', color: Colors.green),
+    CategoryModel(id: 6, name: 'Bills', icon: 'receipt', color: Colors.grey),
+    CategoryModel(id: 7, name: 'Education', icon: 'school', color: Colors.indigo),
+    CategoryModel(id: 8, name: 'Travel', icon: 'flight', color: Colors.teal),
   ];
 
    // Mock budget data
@@ -122,13 +124,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
     },
 
   ];
-  void _addToBudgetCategories(Map<String, dynamic> newCategory) {
+  
+  void _addToBudgetCategories(CategoryModel newCategory) {
     setState(() {
-      _budgetCategories.add({
-        ...newCategory,
-        "id": _budgetCategories.length + 1,
-        "isEditing": false,
-      });
+      categories.add(newCategory);
     });
   }
   
@@ -145,7 +144,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
   // 👇 Render the screen based on selected index
   List<Widget> get _screens => [
         _buildHomeContent(),
-        AddExpense(categories: _categories, onCategoryAdded: _addToBudgetCategories,),
+        AddExpense(categories: categories, onCategoryAdded: _addToBudgetCategories,),
         BudgetPlanner(
           currentIndex: _currentIndex,
           onIndexChanged: _onBottomNavTap, budgetCategories: _budgetCategories, // callback here

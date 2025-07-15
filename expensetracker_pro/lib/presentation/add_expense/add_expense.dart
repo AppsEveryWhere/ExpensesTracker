@@ -1,3 +1,4 @@
+import 'package:expensetracker_pro/model/category_model.dart';
 import 'package:expensetracker_pro/presentation/add_expense/widgets/add_category_modal_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +12,10 @@ import './widgets/date_picker_widget.dart';
 import './widgets/notes_input_widget.dart';
 
 class AddExpense extends StatefulWidget {
-  final List<Map<String, dynamic>> categories;
-  final ValueChanged<Map<String, dynamic>> onCategoryAdded;
+  final List<CategoryModel> categories;
+  final ValueChanged<CategoryModel> onCategoryAdded;
+
+
 
   const AddExpense({
     super.key,
@@ -37,12 +40,12 @@ class _AddExpenseState extends State<AddExpense> {
   bool _isLoading = false;
   bool _hasUnsavedChanges = false;
 
-  late List<Map<String, dynamic>> _categories;
+  late List<CategoryModel> _categories;
 
 @override
 void initState() {
   super.initState();
-  _categories = List<Map<String, dynamic>>.from(widget.categories);
+  _categories = List<CategoryModel>.from(widget.categories);
   _amountController.addListener(_onFormChanged);
   _notesController.addListener(_onFormChanged);
 }
@@ -160,25 +163,20 @@ void initState() {
   }
 
   void _showAddCategoryModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddCategoryModalWidget(
-        onCategoryAdded: (Map<String, dynamic> newCategory) {
-          setState(() {
-           _categories.add({
-        "id": _categories.length + 1,
-        "name": newCategory["name"],
-        "icon": newCategory["icon"],
-        "color": newCategory["color"] ?? Colors.grey,
-      });
-      widget.onCategoryAdded(_categories.last);
-          });
-        },
-      ),
-    );
-  }
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => AddCategoryModalWidget(
+      onCategoryAdded: (p0) => setState(() {
+        _categories.add(p0);
+        widget.onCategoryAdded(p0);
+      }), // Update categories and notify parent
+    ),
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -279,13 +277,18 @@ Row(
                     itemBuilder: (context, index) {
                       final category = _categories[index];
                       return CategoryChipWidget(
-                        category: category,
-                        isSelected: _selectedCategory == category['name'],
-                        onTap: () => _onCategorySelected(category['name']),
+                        category: {
+                          'name': category.name,
+                          'icon': category.icon,
+                          'color': category.color,
+                        }, // 👈 Only do this if your widget still expects a Map
+                        isSelected: _selectedCategory == category.name,
+                        onTap: () => _onCategorySelected(category.name),
                       );
                     },
                   ),
                 ),
+
 
                 SizedBox(height: 6.h),
 
