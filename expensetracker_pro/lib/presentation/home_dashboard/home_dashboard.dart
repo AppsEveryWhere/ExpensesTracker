@@ -14,7 +14,8 @@ import './widgets/quick_stats_row_widget.dart';
 import './widgets/recent_transactions_widget.dart';
 
 class HomeDashboard extends StatefulWidget {
-  const HomeDashboard({super.key});
+  final VoidCallback toggleTheme;
+  const HomeDashboard({super.key, required this.toggleTheme,});
 
   @override
   State<HomeDashboard> createState() => _HomeDashboardState();
@@ -22,7 +23,6 @@ class HomeDashboard extends StatefulWidget {
 
 class _HomeDashboardState extends State<HomeDashboard> {
   int _currentIndex = 0;
-
   // Dummy data and logic reused from your previous code
   final Map<String, dynamic> _dashboardData = {
     "user": {
@@ -125,6 +125,11 @@ class _HomeDashboardState extends State<HomeDashboard> {
 
   ];
   
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void _addToBudgetCategories(CategoryModel newCategory) {
     setState(() {
       categories.add(newCategory);
@@ -150,7 +155,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
           onIndexChanged: _onBottomNavTap, budgetCategories: _budgetCategories, // callback here
         ),
         GroupsDashboard(),
-        UserProfileSettings()
+        UserProfileSettings(toggleTheme: widget.toggleTheme), // Pass the toggle function
       ];
 
   Widget _buildHomeContent() {

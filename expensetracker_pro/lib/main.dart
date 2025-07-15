@@ -1,3 +1,4 @@
+import 'package:expensetracker_pro/presentation/home_dashboard/home_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
@@ -24,27 +25,40 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final ValueNotifier<bool> useDarkTheme = ValueNotifier(false);
+
+  MyApp({super.key});
+
+  void toggleTheme() {
+    useDarkTheme.value = !useDarkTheme.value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, screenType) {
-      return MaterialApp(
-        title: 'expensetracker_pro',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.light,
-        // 🚨 CRITICAL: NEVER REMOVE OR MODIFY
-        builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(1.0),
+      return ValueListenableBuilder<bool>(
+        valueListenable: useDarkTheme,
+        builder: (context, isDark, _) {
+          return MaterialApp(
+            title: 'expensetracker_pro',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            builder: (context, child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(1.0),
+                ),
+                child: child!,
+              );
+            },
+            debugShowCheckedModeBanner: false,
+            home: HomeDashboard(
+              toggleTheme: toggleTheme, // ⬅️ Pass this to allow toggling
             ),
-            child: child!,
+            initialRoute: AppRoutes.initial,
           );
         },
-        // 🚨 END CRITICAL SECTION
-        debugShowCheckedModeBanner: false,
-        routes: AppRoutes.routes,
-        initialRoute: AppRoutes.initial,
       );
     });
   }

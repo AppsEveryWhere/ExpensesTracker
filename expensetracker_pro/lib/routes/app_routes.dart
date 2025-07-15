@@ -13,11 +13,11 @@ class AppRoutes {
   static const String userProfileSettings = '/user-profile-settings';
   static const String premiumUpgrade = '/premium-upgrade';
   static const String groupsDashboard = '/groups-dashboard';
+  static late VoidCallback toggleTheme;
 
   static Map<String, WidgetBuilder> routes = {
-    initial: (context) => const HomeDashboard(),
-    homeDashboard: (context) => const HomeDashboard(),
-    userProfileSettings: (context) => const UserProfileSettings(),
+    initial: (context) => HomeDashboard(toggleTheme: toggleTheme),
+    homeDashboard: (context) => HomeDashboard(toggleTheme: toggleTheme),
     premiumUpgrade: (context) => const PremiumUpgrade(),
     groupsDashboard: (context) => const GroupsDashboard(),
     // TODO: Add your other routes here

@@ -18,7 +18,7 @@ class ThemeToggleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 4.w),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+      padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
         children: [
           // Icon Container

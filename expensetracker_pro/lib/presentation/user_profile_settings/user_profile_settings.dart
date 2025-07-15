@@ -9,7 +9,8 @@ import './widgets/settings_section_widget.dart';
 import './widgets/theme_toggle_widget.dart';
 
 class UserProfileSettings extends StatefulWidget {
-  const UserProfileSettings({Key? key}) : super(key: key);
+  final VoidCallback toggleTheme;
+  const UserProfileSettings({Key? key, required this.toggleTheme}) : super(key: key);
 
   @override
   State<UserProfileSettings> createState() => _UserProfileSettingsState();
@@ -21,7 +22,6 @@ class _UserProfileSettingsState extends State<UserProfileSettings> {
   String _selectedCurrency = 'USD';
   String _lastSyncTime = '2025-07-12 21:10:00';
   bool _isPremiumUser = false;
-
   // Mock user data
   final Map<String, dynamic> _userData = {
     "id": 1,
@@ -318,19 +318,20 @@ class _UserProfileSettingsState extends State<UserProfileSettings> {
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 4.w),
-                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                  padding: EdgeInsets.symmetric(vertical: 2.h),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
+                      SizedBox(width: 3.w),
                       CustomIconWidget(
                         iconName: 'notifications',
                         color: Theme.of(context).colorScheme.primary,
                         size: 24,
                       ),
-                      SizedBox(width: 4.w),
+                      SizedBox(width: 5.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,6 +364,7 @@ class _UserProfileSettingsState extends State<UserProfileSettings> {
                     setState(() {
                       _isDarkMode = value;
                     });
+                    widget.toggleTheme(); // Call the toggle function from MyApp
                   },
                 ),
               ],
