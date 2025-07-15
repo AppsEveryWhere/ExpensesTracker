@@ -93,7 +93,7 @@ class AppTheme {
     ),
 
     // Card theme with subtle elevation for expense items
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: cardLight,
       elevation: 1,
       shadowColor: shadowLight,
@@ -284,7 +284,7 @@ class AppTheme {
     ),
 
     // Tab bar theme
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: primaryLight,
       unselectedLabelColor: textSecondaryLight,
       indicatorColor: primaryLight,
@@ -413,7 +413,7 @@ class AppTheme {
     ),
 
     // Card theme for dark mode
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: cardDark,
       elevation: 2,
       shadowColor: shadowDark,
@@ -604,7 +604,7 @@ class AppTheme {
     ),
 
     // Tab bar theme for dark mode
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: primaryDark,
       unselectedLabelColor: textSecondaryDark,
       indicatorColor: primaryDark,

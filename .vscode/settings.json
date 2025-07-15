@@ -1,0 +1,6 @@
+{
+  "dart.flutterSdkPath": "/Users/appseverywhere/Desktop/Flutter SDK/flutter",
+  "terminal.integrated.env.osx": {
+    "PATH": "/Users/appseverywhere/Desktop/flutter/bin:${env:PATH}"
+  }
+}

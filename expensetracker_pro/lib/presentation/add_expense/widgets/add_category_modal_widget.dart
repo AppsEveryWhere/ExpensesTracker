@@ -1,10 +1,11 @@
+import 'package:expensetracker_pro/model/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
 
 class AddCategoryModalWidget extends StatefulWidget {
-  final Function(Map<String, dynamic>) onCategoryAdded;
+  final Function(CategoryModel) onCategoryAdded;
 
   const AddCategoryModalWidget({
     Key? key,
@@ -63,32 +64,25 @@ class _AddCategoryModalWidgetState extends State<AddCategoryModalWidget> {
   }
 
   void _addCategory() {
-    if (_nameController.text.trim().isEmpty ||
-        _budgetController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Please fill in all fields'),
-          backgroundColor: AppTheme.errorColor));
-      return;
-    }
-
-    final budgetAmount = double.tryParse(_budgetController.text);
-    if (budgetAmount == null || budgetAmount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Please enter a valid budget amount'),
-          backgroundColor: AppTheme.errorColor));
-      return;
-    }
-
-    final newCategory = {
-      "name": _nameController.text.trim(),
-      "icon": _selectedIcon,
-      "budgetAmount": budgetAmount,
-      "color": _selectedColor.value,
-    };
-
-    widget.onCategoryAdded(newCategory);
-    Navigator.pop(context);
+  if (_nameController.text.trim().isEmpty){
+    ScaffoldMessenger.of(
+        context.findRootAncestorStateOfType<ScaffoldState>()!.context
+      ).showSnackBar(SnackBar(
+        content: Text('Please fill in all fields'),
+        backgroundColor: AppTheme.errorColor));
+    return;
   }
+
+  final newCategory = CategoryModel(
+    id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+    name: _nameController.text.trim(),
+    icon: _selectedIcon,
+    color: _selectedColor,
+  );
+
+  widget.onCategoryAdded(newCategory); // Wrap in a list
+  Navigator.pop(context);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -136,14 +130,6 @@ class _AddCategoryModalWidgetState extends State<AddCategoryModalWidget> {
                             decoration: InputDecoration(
                                 hintText: 'Enter category name')),
                         SizedBox(height: 3.h),
-                        _buildSectionTitle('Budget Amount'),
-                        SizedBox(height: 1.h),
-                        TextField(
-                            controller: _budgetController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                hintText: 'Enter budget amount',
-                                prefixText: '\$ ')),
                         SizedBox(height: 3.h),
                         _buildSectionTitle('Choose Icon'),
                         SizedBox(height: 2.h),
