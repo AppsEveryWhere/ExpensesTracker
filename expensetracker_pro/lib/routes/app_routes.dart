@@ -10,19 +10,15 @@ class AppRoutes {
   // TODO: Add your routes here
   static const String initial = '/';
   static const String homeDashboard = '/home-dashboard';
-  static const String addExpense = '/add-expense';
   static const String userProfileSettings = '/user-profile-settings';
   static const String premiumUpgrade = '/premium-upgrade';
-  static const String budgetPlanner = '/budget-planner';
   static const String groupsDashboard = '/groups-dashboard';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const HomeDashboard(),
     homeDashboard: (context) => const HomeDashboard(),
-    addExpense: (context) => const AddExpense(),
     userProfileSettings: (context) => const UserProfileSettings(),
     premiumUpgrade: (context) => const PremiumUpgrade(),
-    budgetPlanner: (context) => const BudgetPlanner(),
     groupsDashboard: (context) => const GroupsDashboard(),
     // TODO: Add your other routes here
   };

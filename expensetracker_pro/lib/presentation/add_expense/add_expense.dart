@@ -1,3 +1,4 @@
+import 'package:expensetracker_pro/presentation/add_expense/widgets/add_category_modal_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
@@ -10,11 +11,20 @@ import './widgets/date_picker_widget.dart';
 import './widgets/notes_input_widget.dart';
 
 class AddExpense extends StatefulWidget {
-  const AddExpense({super.key});
+  final List<Map<String, dynamic>> categories;
+  final ValueChanged<Map<String, dynamic>> onCategoryAdded;
+
+  const AddExpense({
+    super.key,
+    required this.categories,
+    required this.onCategoryAdded,
+  });
 
   @override
   State<AddExpense> createState() => _AddExpenseState();
 }
+
+
 
 class _AddExpenseState extends State<AddExpense> {
   final _formKey = GlobalKey<FormState>();
@@ -27,24 +37,15 @@ class _AddExpenseState extends State<AddExpense> {
   bool _isLoading = false;
   bool _hasUnsavedChanges = false;
 
-  // Mock categories with icons
-  final List<Map<String, dynamic>> _categories = [
-    {'name': 'Food', 'icon': 'restaurant', 'color': Colors.orange},
-    {'name': 'Transport', 'icon': 'directions_car', 'color': Colors.blue},
-    {'name': 'Shopping', 'icon': 'shopping_bag', 'color': Colors.purple},
-    {'name': 'Entertainment', 'icon': 'movie', 'color': Colors.red},
-    {'name': 'Health', 'icon': 'local_hospital', 'color': Colors.green},
-    {'name': 'Bills', 'icon': 'receipt', 'color': Colors.grey},
-    {'name': 'Education', 'icon': 'school', 'color': Colors.indigo},
-    {'name': 'Travel', 'icon': 'flight', 'color': Colors.teal},
-  ];
+  late List<Map<String, dynamic>> _categories;
 
-  @override
-  void initState() {
-    super.initState();
-    _amountController.addListener(_onFormChanged);
-    _notesController.addListener(_onFormChanged);
-  }
+@override
+void initState() {
+  super.initState();
+  _categories = List<Map<String, dynamic>>.from(widget.categories);
+  _amountController.addListener(_onFormChanged);
+  _notesController.addListener(_onFormChanged);
+}
 
   @override
   void dispose() {
@@ -158,11 +159,25 @@ class _AddExpenseState extends State<AddExpense> {
     return result ?? false;
   }
 
-  void _handleCancel() async {
-    final shouldPop = await _onWillPop();
-    if (shouldPop && mounted) {
-      Navigator.of(context).pop();
-    }
+  void _showAddCategoryModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddCategoryModalWidget(
+        onCategoryAdded: (Map<String, dynamic> newCategory) {
+          setState(() {
+           _categories.add({
+        "id": _categories.length + 1,
+        "name": newCategory["name"],
+        "icon": newCategory["icon"],
+        "color": newCategory["color"] ?? Colors.grey,
+      });
+      widget.onCategoryAdded(_categories.last);
+          });
+        },
+      ),
+    );
   }
 
   @override
@@ -172,15 +187,7 @@ class _AddExpenseState extends State<AddExpense> {
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          leading: TextButton(
-            onPressed: _handleCancel,
-            child: Text(
-              'Cancel',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-            ),
-          ),
+          
           title: Text(
             'Add Expense',
             style: Theme.of(context).textTheme.titleLarge,
@@ -232,12 +239,35 @@ class _AddExpenseState extends State<AddExpense> {
                 SizedBox(height: 6.h),
 
                 // Category Selection Section
-                Text(
-                  'Category',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    Text(
+      'Category',
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+    ),
+    TextButton.icon(
+      onPressed: _showAddCategoryModal,
+      icon: Icon(Icons.add, size: 18, color: Theme.of(context).colorScheme.primary),
+      label: Text(
+        'Add',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        minimumSize: Size(0, 0),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    ),
+  ],
+),
+
+
                 SizedBox(height: 2.h),
 
                 SizedBox(

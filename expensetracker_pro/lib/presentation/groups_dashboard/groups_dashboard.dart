@@ -16,7 +16,6 @@ class GroupsDashboard extends StatefulWidget {
 
 class _GroupsDashboardState extends State<GroupsDashboard>
     with TickerProviderStateMixin {
-  int _currentIndex = 3; // Groups tab active
   bool _isLoading = false;
 
   // Mock data for groups
@@ -130,7 +129,6 @@ class _GroupsDashboardState extends State<GroupsDashboard>
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: _buildAppBar(),
       body: _buildBody(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
       floatingActionButton: _buildFloatingActionButton(),
     );
   }
@@ -213,98 +211,6 @@ class _GroupsDashboardState extends State<GroupsDashboard>
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      currentIndex: _currentIndex,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor:
-          Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-      selectedItemColor:
-          Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-      unselectedItemColor:
-          Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
-      selectedLabelStyle:
-          Theme.of(context).bottomNavigationBarTheme.selectedLabelStyle,
-      unselectedLabelStyle:
-          Theme.of(context).bottomNavigationBarTheme.unselectedLabelStyle,
-      onTap: _onBottomNavTap,
-      items: [
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'dashboard',
-            color: _currentIndex == 0
-                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor!
-                : Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .unselectedItemColor!,
-            size: 24,
-          ),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'add_circle_outline',
-            color: _currentIndex == 1
-                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor!
-                : Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .unselectedItemColor!,
-            size: 24,
-          ),
-          label: 'Add',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'pie_chart',
-            color: _currentIndex == 2
-                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor!
-                : Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .unselectedItemColor!,
-            size: 24,
-          ),
-          label: 'Budget',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'group',
-            color: _currentIndex == 3
-                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor!
-                : Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .unselectedItemColor!,
-            size: 24,
-          ),
-          label: 'Groups',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'star',
-            color: _currentIndex == 4
-                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor!
-                : Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .unselectedItemColor!,
-            size: 24,
-          ),
-          label: 'Premium',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'person',
-            color: _currentIndex == 5
-                ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor!
-                : Theme.of(context)
-                    .bottomNavigationBarTheme
-                    .unselectedItemColor!,
-            size: 24,
-          ),
-          label: 'Profile',
-        ),
-      ],
-    );
-  }
-
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
       onPressed: _showJoinGroupModal,
@@ -323,35 +229,6 @@ class _GroupsDashboardState extends State<GroupsDashboard>
         ),
       ),
     );
-  }
-
-  void _onBottomNavTap(int index) {
-    if (index == _currentIndex) return;
-
-    setState(() {
-      _currentIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/home-dashboard');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/add-expense');
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/budget-planner');
-        break;
-      case 3:
-        // Current screen - do nothing
-        break;
-      case 4:
-        Navigator.pushReplacementNamed(context, '/premium-upgrade');
-        break;
-      case 5:
-        Navigator.pushReplacementNamed(context, '/user-profile-settings');
-        break;
-    }
   }
 
   Future<void> _handleRefresh() async {

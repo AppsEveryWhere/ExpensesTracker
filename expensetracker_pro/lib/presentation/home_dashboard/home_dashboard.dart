@@ -1,3 +1,7 @@
+import 'package:expensetracker_pro/presentation/add_expense/add_expense.dart';
+import 'package:expensetracker_pro/presentation/budget_planner/budget_planner.dart';
+import 'package:expensetracker_pro/presentation/groups_dashboard/groups_dashboard.dart';
+import 'package:expensetracker_pro/presentation/user_profile_settings/user_profile_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -14,27 +18,21 @@ class HomeDashboard extends StatefulWidget {
   State<HomeDashboard> createState() => _HomeDashboardState();
 }
 
-class _HomeDashboardState extends State<HomeDashboard>
-    with TickerProviderStateMixin {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
-  bool _isLoading = false;
-  bool _isOffline = false;
+class _HomeDashboardState extends State<HomeDashboard> {
   int _currentIndex = 0;
 
-  // Mock data for the dashboard
+  // Dummy data and logic reused from your previous code
   final Map<String, dynamic> _dashboardData = {
     "user": {
       "name": "Sarah Johnson",
-      "avatar":
-          "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
       "currentMonth": "July 2025",
     },
     "monthlySummary": {
       "totalSpent": 2847.50,
       "budget": 3500.00,
       "percentage": 0.81,
-      "status": "warning", // success, warning, error
+      "status": "warning",
     },
     "quickStats": {
       "expensesCount": 47,
@@ -60,211 +58,140 @@ class _HomeDashboardState extends State<HomeDashboard>
         "icon": "directions_car",
         "color": "#4A90E2",
       },
-      {
-        "id": 3,
-        "title": "Grocery Shopping",
-        "category": "Food & Dining",
-        "amount": 89.32,
-        "date": "2025-07-11",
-        "icon": "shopping_cart",
-        "color": "#FF6B35",
-      },
-      {
-        "id": 4,
-        "title": "Netflix Subscription",
-        "category": "Entertainment",
-        "amount": 15.99,
-        "date": "2025-07-11",
-        "icon": "movie",
-        "color": "#2E7D32",
-      },
-      {
-        "id": 5,
-        "title": "Gas Station",
-        "category": "Transportation",
-        "amount": 45.00,
-        "date": "2025-07-10",
-        "icon": "local_gas_station",
-        "color": "#4A90E2",
-      },
     ],
   };
 
-  @override
-  void initState() {
-    super.initState();
-    _checkConnectivity();
-  }
+  final List<Map<String, dynamic>> _categories = [
+    {"id": 1,'name': 'Food', 'icon': 'restaurant', 'color': Colors.orange},
+    {"id": 2,'name': 'Transport', 'icon': 'directions_car', 'color': Colors.blue},
+    {"id": 3,'name': 'Shopping', 'icon': 'shopping_bag', 'color': Colors.purple},
+    {"id": 4,'name': 'Entertainment', 'icon': 'movie', 'color': Colors.red},
+    {"id": 5,'name': 'Health', 'icon': 'local_hospital', 'color': Colors.green},
+    {"id": 6,'name': 'Bills', 'icon': 'receipt', 'color': Colors.grey},
+    {"id": 7,'name': 'Education', 'icon': 'school', 'color': Colors.indigo},
+    {"id": 8,'name': 'Travel', 'icon': 'flight', 'color': Colors.teal},
+  ];
 
-  void _checkConnectivity() {
-    // Simulate connectivity check
+   // Mock budget data
+  final List<Map<String, dynamic>> _budgetCategories = [
+
+    {
+      "id": 1,
+      "name": "Food & Dining",
+      "icon": "restaurant",
+      "budgetAmount": 800.0,
+      "spentAmount": 650.0,
+      "color": 0xFF4CAF50,
+      "isEditing": false,
+    },
+    {
+      "id": 2,
+      "name": "Transportation",
+      "icon": "directions_car",
+      "budgetAmount": 400.0,
+      "spentAmount": 320.0,
+      "color": 0xFF2196F3,
+      "isEditing": false,
+    },
+    {
+      "id": 3,
+      "name": "Entertainment",
+      "icon": "movie",
+      "budgetAmount": 300.0,
+      "spentAmount": 380.0,
+      "color": 0xFFFF9800,
+      "isEditing": false,
+    },
+    {
+      "id": 4,
+      "name": "Shopping",
+      "icon": "shopping_bag",
+      "budgetAmount": 500.0,
+      "spentAmount": 245.0,
+      "color": 0xFF9C27B0,
+      "isEditing": false,
+    },
+    {
+      "id": 5,
+      "name": "Healthcare",
+      "icon": "local_hospital",
+      "budgetAmount": 200.0,
+      "spentAmount": 150.0,
+      "color": 0xFFE91E63,
+      "isEditing": false,
+    },
+
+  ];
+  void _addToBudgetCategories(Map<String, dynamic> newCategory) {
     setState(() {
-      _isOffline = false; // Mock online status
+      _budgetCategories.add({
+        ...newCategory,
+        "id": _budgetCategories.length + 1,
+        "isEditing": false,
+      });
     });
   }
-
-  Future<void> _onRefresh() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    // Provide haptic feedback
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Data refreshed successfully'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
+  
+  void _onAddExpense() {
+    Navigator.pushNamed(context, '/add-expense');
   }
 
   void _onBottomNavTap(int index) {
     setState(() {
       _currentIndex = index;
     });
-
-    switch (index) {
-      case 0:
-        // Already on Home
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/budget-planner');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/groups-dashboard');
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/user-profile-settings');
-        break;
-    }
   }
 
-  void _onAddExpense() {
-    Navigator.pushNamed(context, '/add-expense');
-  }
-
-  void _onSummaryCardTap() {
-    // Navigate to detailed monthly breakdown
-    Navigator.pushNamed(context, '/budget-planner');
-  }
-
-  void _onQuickStatTap(String statType) {
-    switch (statType) {
-      case 'expenses':
-        // Navigate to full expense history
-        break;
-      case 'budget':
-        Navigator.pushNamed(context, '/budget-planner');
-        break;
-      case 'category':
-        // Navigate to category breakdown
-        break;
-    }
-  }
-
-  void _onTransactionEdit(int transactionId) {
-    Navigator.pushNamed(context, '/add-expense');
-  }
-
-  void _onTransactionDelete(int transactionId) {
-    setState(() {
-      (_dashboardData["recentTransactions"] as List)
-          .removeWhere((transaction) => transaction["id"] == transactionId);
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Transaction deleted'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            // Implement undo functionality
-          },
+  // 👇 Render the screen based on selected index
+  List<Widget> get _screens => [
+        _buildHomeContent(),
+        AddExpense(categories: _categories, onCategoryAdded: _addToBudgetCategories,),
+        BudgetPlanner(
+          currentIndex: _currentIndex,
+          onIndexChanged: _onBottomNavTap, budgetCategories: _budgetCategories, // callback here
         ),
-      ),
-    );
-  }
+        GroupsDashboard(),
+        UserProfileSettings()
+      ];
 
-  void _onViewAllTransactions() {
-    // Navigate to full transaction history
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomIconWidget(
-              iconName: 'account_balance_wallet',
-              size: 20.w,
-              color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
-            ),
-            SizedBox(height: 3.h),
-            Text(
-              'No expenses yet',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.lightTheme.colorScheme.onSurface,
-                  ),
-            ),
-            SizedBox(height: 1.h),
-            Text(
-              'Start tracking your expenses to get insights into your spending habits',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            SizedBox(height: 4.h),
-            ElevatedButton.icon(
-              onPressed: _onAddExpense,
-              icon: CustomIconWidget(
-                iconName: 'add',
-                size: 5.w,
-                color: Colors.white,
-              ),
-              label: Text('Add Your First Expense'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSyncStatusIndicator() {
-    if (!_isOffline) return const SizedBox.shrink();
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 1.h),
-      color: AppTheme.warningColor.withValues(alpha: 0.1),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildHomeContent() {
+    return SingleChildScrollView(
+      child: Column(
         children: [
-          CustomIconWidget(
-            iconName: 'cloud_off',
-            size: 4.w,
-            color: AppTheme.warningColor,
+          GreetingHeaderWidget(userData: _dashboardData["user"]),
+          SizedBox(height: 2.h),
+          MonthlySummaryCardWidget(
+            summaryData: _dashboardData["monthlySummary"],
+            onTap: () => setState(() => _currentIndex = 2),
           ),
-          SizedBox(width: 2.w),
-          Text(
-            'Offline - Data will sync when connected',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.warningColor,
-                ),
+          SizedBox(height: 2.h),
+          QuickStatsRowWidget(
+            statsData: _dashboardData["quickStats"],
+            onStatTap: (type) {
+              if (type == 'budget') {
+                setState(() => _currentIndex = 2);;
+              }
+            },
           ),
+          SizedBox(height: 2.h),
+          RecentTransactionsWidget(
+            transactions: _dashboardData["recentTransactions"]
+                as List<Map<String, dynamic>>,
+            onTransactionEdit: (id) {
+              Navigator.pushNamed(context, '/add-expense');
+            },
+            onTransactionDelete: (id) {
+              setState(() {
+                (_dashboardData["recentTransactions"] as List)
+                    .removeWhere((tx) => tx["id"] == id);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Transaction deleted'),
+              ));
+            },
+            onViewAll: () {},
+          ),
+          SizedBox(height: 10.h),
         ],
       ),
     );
@@ -272,67 +199,14 @@ class _HomeDashboardState extends State<HomeDashboard>
 
   @override
   Widget build(BuildContext context) {
-    final hasTransactions =
-        (_dashboardData["recentTransactions"] as List).isNotEmpty;
-
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildSyncStatusIndicator(),
-            Expanded(
-              child: hasTransactions
-                  ? RefreshIndicator(
-                      key: _refreshIndicatorKey,
-                      onRefresh: _onRefresh,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GreetingHeaderWidget(
-                              userData: _dashboardData["user"]
-                                  as Map<String, dynamic>,
-                            ),
-                            SizedBox(height: 2.h),
-                            MonthlySummaryCardWidget(
-                              summaryData: _dashboardData["monthlySummary"]
-                                  as Map<String, dynamic>,
-                              onTap: _onSummaryCardTap,
-                            ),
-                            SizedBox(height: 2.h),
-                            QuickStatsRowWidget(
-                              statsData: _dashboardData["quickStats"]
-                                  as Map<String, dynamic>,
-                              onStatTap: _onQuickStatTap,
-                            ),
-                            SizedBox(height: 2.h),
-                            RecentTransactionsWidget(
-                              transactions: _dashboardData["recentTransactions"]
-                                  as List<Map<String, dynamic>>,
-                              onTransactionEdit: _onTransactionEdit,
-                              onTransactionDelete: _onTransactionDelete,
-                              onViewAll: _onViewAllTransactions,
-                            ),
-                            SizedBox(height: 10.h), // Space for FAB
-                          ],
-                        ),
-                      ),
-                    )
-                  : _buildEmptyState(),
-            ),
-          ],
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onAddExpense,
-        child: CustomIconWidget(
-          iconName: 'add',
-          size: 6.w,
-          color: Colors.white,
-        ),
-      ),
+      
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onBottomNavTap,
@@ -343,22 +217,28 @@ class _HomeDashboardState extends State<HomeDashboard>
               iconName: 'home',
               size: 6.w,
               color: _currentIndex == 0
-                  ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-                  : Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .unselectedItemColor,
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
+          icon: CustomIconWidget(
+            iconName: 'add_circle_outline',
+            color: _currentIndex == 1
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 24,
+          ),
+          label: 'Add',
+        ),
+          BottomNavigationBarItem(
             icon: CustomIconWidget(
               iconName: 'pie_chart',
               size: 6.w,
-              color: _currentIndex == 1
-                  ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-                  : Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .unselectedItemColor,
+              color: _currentIndex == 2
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             label: 'Budget',
           ),
@@ -366,11 +246,9 @@ class _HomeDashboardState extends State<HomeDashboard>
             icon: CustomIconWidget(
               iconName: 'group',
               size: 6.w,
-              color: _currentIndex == 2
-                  ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-                  : Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .unselectedItemColor,
+              color: _currentIndex == 3
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             label: 'Groups',
           ),
@@ -378,11 +256,9 @@ class _HomeDashboardState extends State<HomeDashboard>
             icon: CustomIconWidget(
               iconName: 'person',
               size: 6.w,
-              color: _currentIndex == 3
-                  ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-                  : Theme.of(context)
-                      .bottomNavigationBarTheme
-                      .unselectedItemColor,
+              color: _currentIndex == 4
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             label: 'Profile',
           ),

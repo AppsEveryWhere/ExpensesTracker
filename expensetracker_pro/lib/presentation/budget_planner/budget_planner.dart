@@ -2,79 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
-import './widgets/add_category_modal_widget.dart';
+import '../add_expense/widgets/add_category_modal_widget.dart';
 import './widgets/budget_category_item_widget.dart';
 import './widgets/budget_chart_widget.dart';
 import './widgets/total_budget_card_widget.dart';
 
 class BudgetPlanner extends StatefulWidget {
-  const BudgetPlanner({Key? key}) : super(key: key);
+  final int currentIndex;
+  final ValueChanged<int>? onIndexChanged;
+  final List<Map<String, dynamic>> budgetCategories;
+
+  const BudgetPlanner({
+    Key? key,
+    required this.currentIndex,
+    this.onIndexChanged,
+    required this.budgetCategories,
+  }) : super(key: key);
 
   @override
   State<BudgetPlanner> createState() => _BudgetPlannerState();
 }
 
+
+
 class _BudgetPlannerState extends State<BudgetPlanner>
     with TickerProviderStateMixin {
-  int _currentBottomIndex = 2; // Budget tab active
   DateTime _selectedMonth = DateTime.now();
-  bool _isChartExpanded = false;
-  bool _isPieChart = true;
   late TabController _chartTabController;
 
-  // Mock budget data
-  final List<Map<String, dynamic>> _budgetCategories = [
-    {
-      "id": 1,
-      "name": "Food & Dining",
-      "icon": "restaurant",
-      "budgetAmount": 800.0,
-      "spentAmount": 650.0,
-      "color": 0xFF4CAF50,
-      "isEditing": false,
-    },
-    {
-      "id": 2,
-      "name": "Transportation",
-      "icon": "directions_car",
-      "budgetAmount": 400.0,
-      "spentAmount": 320.0,
-      "color": 0xFF2196F3,
-      "isEditing": false,
-    },
-    {
-      "id": 3,
-      "name": "Entertainment",
-      "icon": "movie",
-      "budgetAmount": 300.0,
-      "spentAmount": 380.0,
-      "color": 0xFFFF9800,
-      "isEditing": false,
-    },
-    {
-      "id": 4,
-      "name": "Shopping",
-      "icon": "shopping_bag",
-      "budgetAmount": 500.0,
-      "spentAmount": 245.0,
-      "color": 0xFF9C27B0,
-      "isEditing": false,
-    },
-    {
-      "id": 5,
-      "name": "Healthcare",
-      "icon": "local_hospital",
-      "budgetAmount": 200.0,
-      "spentAmount": 150.0,
-      "color": 0xFFE91E63,
-      "isEditing": false,
-    },
-  ];
-
-  double get _totalBudget => (_budgetCategories as List)
+  double get _totalBudget => (widget.budgetCategories as List)
       .fold(0.0, (sum, category) => sum + (category["budgetAmount"] as double));
 
-  double get _totalSpent => (_budgetCategories as List)
+  double get _totalSpent => (widget.budgetCategories as List)
       .fold(0.0, (sum, category) => sum + (category["spentAmount"] as double));
 
   double get _remainingBudget => _totalBudget - _totalSpent;
@@ -101,56 +60,12 @@ class _BudgetPlannerState extends State<BudgetPlanner>
     });
   }
 
-  void _onBottomNavTap(int index) {
-    setState(() {
-      _currentBottomIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home-dashboard');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/add-expense');
-        break;
-      case 2:
-        // Current screen - Budget Planner
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/groups-dashboard');
-        break;
-      case 4:
-        Navigator.pushNamed(context, '/user-profile-settings');
-        break;
-    }
-  }
-
-  void _showAddCategoryModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddCategoryModalWidget(
-        onCategoryAdded: (Map<String, dynamic> newCategory) {
-          setState(() {
-            _budgetCategories.add({
-              ...newCategory,
-              "id": _budgetCategories.length + 1,
-              "spentAmount": 0.0,
-              "isEditing": false,
-            });
-          });
-        },
-      ),
-    );
-  }
-
   void _updateCategoryBudget(int categoryId, double newAmount) {
     setState(() {
-      final categoryIndex = _budgetCategories
+      final categoryIndex = widget.budgetCategories
           .indexWhere((category) => category["id"] == categoryId);
       if (categoryIndex != -1) {
-        _budgetCategories[categoryIndex]["budgetAmount"] = newAmount;
+        widget.budgetCategories[categoryIndex]["budgetAmount"] = newAmount;
       }
     });
   }
@@ -264,18 +179,9 @@ class _BudgetPlannerState extends State<BudgetPlanner>
           ),
         ],
       ),
-      body: _budgetCategories.isEmpty
+      body: widget.budgetCategories.isEmpty
           ? _buildEmptyState()
           : _buildBudgetContent(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddCategoryModal,
-        child: CustomIconWidget(
-          iconName: 'add',
-          color: Colors.white,
-          size: 24,
-        ),
-      ),
     );
   }
 
@@ -311,9 +217,10 @@ class _BudgetPlannerState extends State<BudgetPlanner>
             ),
             SizedBox(height: 4.h),
             ElevatedButton(
-              onPressed: _showAddCategoryModal,
+              onPressed: () => widget.onIndexChanged?.call(1),
               child: Text('Get Started'),
             ),
+
           ],
         ),
       ),
@@ -343,7 +250,7 @@ class _BudgetPlannerState extends State<BudgetPlanner>
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final category =
-                    _budgetCategories[index];
+                    widget.budgetCategories[index];
                 return BudgetCategoryItemWidget(
                   category: category,
                   onTap: () => _showCategoryContextMenu(context, category),
@@ -353,7 +260,7 @@ class _BudgetPlannerState extends State<BudgetPlanner>
                       _updateCategoryBudget(category["id"] as int, newAmount),
                 );
               },
-              childCount: _budgetCategories.length,
+              childCount: widget.budgetCategories.length,
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 10.h)),
@@ -447,11 +354,11 @@ class _BudgetPlannerState extends State<BudgetPlanner>
               controller: _chartTabController,
               children: [
                 BudgetChartWidget(
-                  categories: _budgetCategories,
+                  categories: widget.budgetCategories,
                   chartType: 'pie',
                 ),
                 BudgetChartWidget(
-                  categories: _budgetCategories,
+                  categories: widget.budgetCategories,
                   chartType: 'bar',
                 ),
               ],
@@ -461,64 +368,5 @@ class _BudgetPlannerState extends State<BudgetPlanner>
       ),
     );
   }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      currentIndex: _currentBottomIndex,
-      onTap: _onBottomNavTap,
-      type: BottomNavigationBarType.fixed,
-      items: [
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'home',
-            color: _currentBottomIndex == 0
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 24,
-          ),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'add_circle_outline',
-            color: _currentBottomIndex == 1
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 24,
-          ),
-          label: 'Add',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'account_balance_wallet',
-            color: _currentBottomIndex == 2
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 24,
-          ),
-          label: 'Budget',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'group',
-            color: _currentBottomIndex == 3
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 24,
-          ),
-          label: 'Groups',
-        ),
-        BottomNavigationBarItem(
-          icon: CustomIconWidget(
-            iconName: 'person',
-            color: _currentBottomIndex == 4
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 24,
-          ),
-          label: 'Profile',
-        ),
-      ],
-    );
   }
-}
+
